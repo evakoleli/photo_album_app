@@ -1,0 +1,14 @@
+CREATE TABLE photos (
+     id    serial PRIMARY KEY,
+     title   varchar(40) NOT NULL CHECK (title <> ''),
+     path    varchar(40) NOT NULL CHECK (path <> ''),
+     created_at  timestamp DEFAULT current_timestamp
+);
+
+CREATE TABLE comments (
+     id    serial PRIMARY KEY,
+     title   varchar(40) NOT NULL CHECK (title <> ''),
+     text    varchar(200) NOT NULL CHECK (text <> ''),
+     photo_id integer,
+     created_at  timestamp DEFAULT current_timestamp
+);
