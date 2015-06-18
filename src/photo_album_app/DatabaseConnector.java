@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DatabaseConnector implements Closeable {
@@ -52,6 +53,10 @@ public class DatabaseConnector implements Closeable {
 		}
 	}
 
+	public PreparedStatement prepareStatement(String q) throws SQLException {
+		return conn.prepareStatement(q);
+	}
+	
 	public void closeStatement() throws SQLException {
 		try {
 			if (statement != null)
