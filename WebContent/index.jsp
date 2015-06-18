@@ -8,7 +8,7 @@
 </head>
 <body>
 	<h1>Welcome to Photo Album Application</h1>
-	<form action="/photo_album_app/Photos" method="get">
+	<form action="/photo_album_app/photos/index.jsp" method="get">
 		<input type="submit"value="View all photos"/>
 	</form>
 	<form action="photos/new.jsp">

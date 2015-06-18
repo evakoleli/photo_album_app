@@ -1,11 +1,16 @@
 package web;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,9 +41,27 @@ public class Photos extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		DatabaseConnector db_conn = new DatabaseConnector();
+		response.setContentType("image/jpeg");  
+		String photo = request.getParameter("photo");
+	    ServletOutputStream out;  
+	    out = response.getOutputStream();  
+	    FileInputStream fin = new FileInputStream("C:\\Users\\Evangelia Koleli\\Desktop\\"+photo);  
+	      
+	    BufferedInputStream bin = new BufferedInputStream(fin);  
+	    BufferedOutputStream bout = new BufferedOutputStream(out);  
+	    int ch =0; ;  
+	    while((ch=bin.read())!=-1)  
+	    {  
+	    bout.write(ch);  
+	    }  
+	      
+	    bin.close();  
+	    fin.close();  
+	    bout.close();  
+	    out.close();
+		
+		/*DatabaseConnector db_conn = new DatabaseConnector();
 		try {
-			System.out.println("edw");
 			db_conn.connectToDB("localhost", "photo_album_app");
 
 			PreparedStatement prep = db_conn
@@ -52,9 +75,7 @@ public class Photos extends HttpServlet {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			db_conn.close();
-		}
+		}*/
 	}
 
 	/**
@@ -62,9 +83,8 @@ public class Photos extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		DatabaseConnector db_conn = new DatabaseConnector();
-		
 		Part photoPart = request.getPart("path");
-		String path = photoPart.getSubmittedFileName();
+		String path = Photos.getFileName(photoPart);
 	    //InputStream imageInputStream = photoPart.getInputStream();
 	    photoPart.write(home_folder+path);
 	    
@@ -102,4 +122,13 @@ public class Photos extends HttpServlet {
 		// TODO Auto-generated method stub
 	}
 
+	private static String getFileName(Part part) {
+	    for (String cd : part.getHeader("content-disposition").split(";")) {
+	        if (cd.trim().startsWith("filename")) {
+	            String fileName = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+	            return fileName.substring(fileName.lastIndexOf('/') + 1).substring(fileName.lastIndexOf('\\') + 1); // MSIE fix.
+	        }
+	    }
+	    return null;
+	}
 }

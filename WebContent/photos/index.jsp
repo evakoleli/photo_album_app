@@ -23,7 +23,7 @@
           <%=rs.getString("title")%>
         </td>
         <td>
-          <img src="file:\\C:\\Users\\Evangelia Koleli\\Desktop\\maria_quasi.png" alt="maria" style="width:304px;height:228px;">
+          <img src="/photo_album_app/Photos?photo=<%=rs.getString("path") %>" alt="<%=rs.getString("path")%>" style="width:304px;height:228px;">
         </td>
       </tr>
     <%}%>
