@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import photo_album_app.Comment;
 import photo_album_app.DatabaseConnector;
 
 /**
@@ -43,10 +45,12 @@ public class Photos extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String photo = request.getParameter("photo");
 		String photo_id = request.getParameter("photo_id");
+		
+		// if the request has parameter "photo"
 		if (photo != null) {
 			response.setContentType("image/jpeg");
 			ServletOutputStream out = response.getOutputStream();
-			FileInputStream fin = new FileInputStream("C:\\Users\\Evangelia Koleli\\Desktop\\" + photo);
+			FileInputStream fin = new FileInputStream(home_folder + photo);
 			BufferedInputStream bin = new BufferedInputStream(fin);
 			BufferedOutputStream bout = new BufferedOutputStream(out);
 			int ch = 0;
@@ -58,24 +62,41 @@ public class Photos extends HttpServlet {
 			fin.close();
 			bout.close();
 			out.close();
-		} else if (photo_id != null) {
+		}
+		// if the request has parameter "photo_id"
+		else if (photo_id != null) {
 			DatabaseConnector db_conn = new DatabaseConnector();
 			try {
 				db_conn.connectToDB("localhost", "photo_album_app");
 				PreparedStatement prep = db_conn
-						.prepareStatement("select title, path from photos where id = ?");
+						.prepareStatement("select title, path, created_at from photos where id = ?");
 				prep.setInt(1, Integer.parseInt(photo_id));
 				ResultSet rs = prep.executeQuery();
-				rs.next();
-				String title = rs.getString("title");
-				String path = rs.getString("path");
-
-				request.setAttribute("title", title);
-				request.setAttribute("path", path);
-				request.setAttribute("photo_id", photo_id);
+				if (!rs.next()) {
+					
+				} else {
+					String title = rs.getString("title");
+					String path = rs.getString("path");
+					String created_at = rs.getString("created_at");
+				
+					prep = db_conn.prepareStatement("select text, email, created_at from comments inner join users on user_id = users.id where photo_id = ? order by created_at");
+					prep.setInt(1, Integer.parseInt(photo_id));
+					rs = prep.executeQuery();
+					ArrayList<Comment> comments = new ArrayList<Comment>();
+					while (rs.next()) {
+						comments.add(new Comment(Integer.parseInt(photo_id), rs.getString("email"), rs.getString("text"), rs.getString("created_at")));
+					}
+					request.setAttribute("title", title);
+					request.setAttribute("path", path);
+					request.setAttribute("photo_id", photo_id);
+					request.setAttribute("created_at", created_at);
+					request.setAttribute("comments", comments);
+				}
 				prep.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				db_conn.close();
 			}
 			request.getRequestDispatcher("/photos/show.jsp").include(request, response);
 		}
@@ -108,7 +129,7 @@ public class Photos extends HttpServlet {
 		} finally {
 			db_conn.close();
 		}
-		response.sendRedirect("index.jsp");
+		response.sendRedirect("photos/index.jsp");
 	}
 
 	/**

@@ -37,3 +37,7 @@ div#navigation form input {
 div#content .failure {
 	color: #ff0000;
 }
+
+div#content table tbody tr.legend td {
+	font-weight: bold;
+}

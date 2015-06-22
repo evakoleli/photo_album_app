@@ -3,6 +3,8 @@
 <%@ page import="photo_album_app.DatabaseConnector"%>
 <%@ page import="java.sql.PreparedStatement"%>
 <%@ page import="java.sql.ResultSet"%>
+<%@ page import="photo_album_app.Comment"%>
+<%@ page import="java.util.ArrayList"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -53,54 +55,54 @@
 				}
 			%>
 		</div>
-		<div id="content">
+		<div id="content">		
+			<%
+				if (userEmail != null) {
+			%>
 			<h1>${title}</h1>
+			${created_at}
 			<p>
-				<img src="/photo_album_app/Photos?photo=${path}" alt="${path}%>">
+				<img src="/photo_album_app/Photos?photo=${path}" alt="${path}%>" style="max-width: 100%;">
 			</p>
+			
 			<%
-				DatabaseConnector db_conn = new DatabaseConnector();
-			%>
-			<%
-				db_conn.connectToDB("localhost", "photo_album_app");
-			%>
-			<%
-				PreparedStatement prep = db_conn
-						.prepareStatement("select text from comments where photo_id="
-								+ request.getAttribute("photo_id"));
-			%>
-			<%
-				ResultSet rs = prep.executeQuery();
+				ArrayList<Comment> comments = (ArrayList<Comment>)request.getAttribute("comments");
+				if (comments.size() > 0) {
 			%>
 			<table>
 				<tbody>
 					<%
-						while (rs.next()) {
+						for (int i = 0; i < comments.size(); i++) {
 					%>
 					<tr>
-						<td><%=rs.getString("text")%></td>
+						<td><b><%=comments.get(i).getUserEmail()%></b> <%=comments.get(i).getCreatedAt()%></td>
+					</tr>
+					<tr>
+						<td><%=comments.get(i).getText()%></td>
 					</tr>
 					<%
 						}
 					%>
-					<%
-						prep.close();
-					%>
-					<%
-						db_conn.close();
-					%>
 				</tbody>
 			</table>
+			<%
+				}
+			%>
+			<br>
+			<br>
 			<p>Create a comment:</p>
 			<form action="/photo_album_app/Comments" method="post"
 				id="comment_form">
 					<textarea name="text" form="comment_form"
-							placeholder="Write your comment here..." rows="4" cols="50" />
+							placeholder="Write your comment here..." rows="4" cols="50" ></textarea>
 					<input type="hidden" name="photo_id" value="${photo_id}" />
 					<input type="hidden" name="user_email"
-						value="${userEmail}" />
+						value="<%= userEmail %>" />
 					<input type="submit" value="Create Comment" />
 			</form>
+			<% } else { %>
+			<h4>Sign in or sign up to visit the rest of the website.</h4>
+			<% } %>
 		</div>
 		<div id="footer">
 			<p>Evangelia Koleli</p>

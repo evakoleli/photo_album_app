@@ -9,6 +9,7 @@ CREATE TABLE comments (
      id    serial PRIMARY KEY,
      text    varchar(200) NOT NULL CHECK (text <> ''),
      photo_id integer,
+     user_id integer,
      created_at  timestamp DEFAULT current_timestamp
 );
 

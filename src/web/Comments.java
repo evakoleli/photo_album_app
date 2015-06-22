@@ -2,6 +2,7 @@ package web;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -42,15 +43,27 @@ public class Comments extends HttpServlet {
 		DatabaseConnector db_conn = new DatabaseConnector();		
 	    String text = request.getParameter("text");
 	    int photo_id = Integer.parseInt(request.getParameter("photo_id"));
+	    String user_email = request.getParameter("user_email");
 
-		String query = "insert into comments (text, photo_id) values (?,?)";
 		try {
 			db_conn.connectToDB("localhost", "photo_album_app");
+			
+			String query = "select id from users where email = ?";
 			PreparedStatement prep = db_conn.prepareStatement(query);
-			prep.setString(1, text);
-			prep.setInt(2, photo_id);
-			prep.executeUpdate();
-			prep.close();
+			prep.setString(1, user_email);
+			ResultSet rs = prep.executeQuery();
+			if (!rs.next()) {
+				//
+			} else {
+				int user_id = rs.getInt("id");
+				query = "insert into comments (text, photo_id, user_id) values (?,?,?)";
+				prep = db_conn.prepareStatement(query);
+				prep.setString(1, text);
+				prep.setInt(2, photo_id);
+				prep.setInt(3, user_id);
+				prep.executeUpdate();
+				prep.close();
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

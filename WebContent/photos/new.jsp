@@ -10,43 +10,50 @@
 </head>
 <body>
 	<div id="container">
-	<%
-		String userEmail = null;
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : request.getCookies()) {
-				if (cookie.getName().equals("user"))
-					userEmail = cookie.getValue();
+		<%
+			String userEmail = null;
+			Cookie[] cookies = request.getCookies();
+			if (cookies != null) {
+				for (Cookie cookie : request.getCookies()) {
+					if (cookie.getName().equals("user"))
+						userEmail = cookie.getValue();
+				}
 			}
-		}
-	%>
-	<div id="header">
-		<h1>Photo Album Application</h1>
-	</div>
-	<div id="navigation">
-		<h4>Menu buttons</h4>
-		<% if (userEmail != null) {%>
-			<form action="/photo_album_app/photos/index.jsp" method="get">
-				<input type="submit" value="View all photos" />
+		%>
+		<div id="header">
+			<h1>Photo Album Application</h1>
+		</div>
+		<div id="navigation">
+			<h4>Menu buttons</h4>
+			<% if (userEmail != null) {%>
+				<form action="/photo_album_app/photos/index.jsp" method="get">
+					<input type="submit" value="View all photos" />
+				</form>
+				<form action="/photo_album_app/photos/new.jsp">
+					<input type="submit" value="Upload a new photo" />
+				</form>
+				<form action="/photo_album_app/SignOut" method="post">
+					<input type="submit" value="Logout">
+				</form>
+			<% } else {%>
+				<a href="/photo_album_app/users/sign_in.jsp">Sing in</a>
+				<br>
+				<a href="/photo_album_app/users/sign_up.jsp">Sing up</a>
+			<% } %>
+		</div>
+		<div id="content">
+			<h1>New Photo</h1>
+			<form action="/photo_album_app/Photos" method="post" enctype="multipart/form-data">
+				<ul>
+				<li><label>Title</label></li>
+				<li><input type="text" name="title" /></li>
+				<li><label>File</label></li>
+				<li><input type="file" name=path /></li>
+				<br>
+				<li><input type="submit" value="Upload File" /></li>
+				</ul>
 			</form>
-			<form action="/photo_album_app/photos/new.jsp">
-				<input type="submit" value="Upload a new photo" />
-			</form>
-			<form action="/photo_album_app/SignOut" method="post">
-				<input type="submit" value="Logout">
-			</form>
-		<% } else {%>
-			<a href="/photo_album_app/users/sign_in.jsp">Sing in</a>
-			<br>
-			<a href="/photo_album_app/users/sign_up.jsp">Sing up</a>
-		<% } %>
-	</div>
-	<h1>New Photo</h1>
-	<form action="/photo_album_app/Photos" method="post" enctype="multipart/form-data">
-		<input type="text" name="title" />
-		<input type="file" name=path />
-		<input type="submit" value="Upload File" />
-	</form>
+		</div>
 		<div id="footer">
 			<p>Evangelia Koleli</p>
 		</div>
