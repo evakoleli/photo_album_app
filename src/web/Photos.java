@@ -106,29 +106,45 @@ public class Photos extends HttpServlet {
 
 	/**
 	 * Create photo
+	 * @throws IOException 
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		DatabaseConnector db_conn = new DatabaseConnector();
-		Part photoPart = request.getPart("path");
-		String path = Photos.getFileName(photoPart);
-	    photoPart.write(home_folder+path);
+		String path = "";
+		try {
+			Part photoPart = request.getPart("path");
+			path = Photos.getFileName(photoPart);
+		    photoPart.write(home_folder+path);
+		} catch (IOException e) {
+			String path_failure = "File not found. Try again...";
+			request.setAttribute("failure", path_failure);
+			request.getRequestDispatcher("/photos/new.jsp").include(request, response);
+			e.printStackTrace();
+			return;
+		}
 	    
 	    String title = request.getParameter("title");
-		String query = "insert into photos (title, path) values (?,?)";
-		try {
-			db_conn.connectToDB("localhost", "photo_album_app");
-			PreparedStatement prep = db_conn.prepareStatement(query);
-			prep.setString(1, title);
-			prep.setString(2, path);
-			prep.executeUpdate();
-			prep.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			db_conn.close();
-		}
-		response.sendRedirect("photos/index.jsp");
+	    if (title.isEmpty()) {
+			String path_failure = "Title cannot be empty. Try again...";
+			request.setAttribute("failure", path_failure);
+			request.getRequestDispatcher("/photos/new.jsp").include(request, response);
+	    } else {
+			String query = "insert into photos (title, path) values (?,?)";
+			try {
+				db_conn.connectToDB("localhost", "photo_album_app");
+				PreparedStatement prep = db_conn.prepareStatement(query);
+				prep.setString(1, title);
+				prep.setString(2, path);
+				prep.executeUpdate();
+				prep.close();
+				response.sendRedirect("photos/index.jsp");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				db_conn.close();
+			}
+	    }
 	}
 
 	private static String getFileName(Part part) {

@@ -91,6 +91,7 @@
 			<br>
 			<br>
 			<p>Create a comment:</p>
+			<p class="failure">${failure}</p>	
 			<form action="/photo_album_app/Comments" method="post"
 				id="comment_form">
 					<textarea name="text" form="comment_form"

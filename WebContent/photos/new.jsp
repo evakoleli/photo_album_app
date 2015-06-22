@@ -42,7 +42,11 @@
 			<% } %>
 		</div>
 		<div id="content">
+			<%
+				if (userEmail != null) {
+			%>
 			<h1>New Photo</h1>
+			<p class="failure">${failure}</p>			
 			<form action="/photo_album_app/Photos" method="post" enctype="multipart/form-data">
 				<ul>
 				<li><label>Title</label></li>
@@ -50,9 +54,12 @@
 				<li><label>File</label></li>
 				<li><input type="file" name=path /></li>
 				<br>
-				<li><input type="submit" value="Upload File" /></li>
+				<li><input type="submit" value="Create photo" /></li>
 				</ul>
 			</form>
+			<% } else { %>
+				<h4>Sign in or sign up to visit the rest of the website.</h4>
+			<% } %>
 		</div>
 		<div id="footer">
 			<p>Evangelia Koleli</p>
