@@ -6,6 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" type="text/css" href="../resources/css/styles.css">
+<link rel="stylesheet" type="text/css" href="resources/css/styles.css">
 <title>Sign up</title>
 </head>
 <body>
@@ -46,6 +47,7 @@
 		<p>You are already signed in.</p>
 	<% } else { %>
 		<h1>Sign up</h1>
+		<p class="failure">${sign_up_failure}</p>
 		<form action="/photo_album_app/Users" method="post">
 			<ul>
 			<li><label>Email</label></li>

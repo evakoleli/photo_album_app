@@ -29,13 +29,12 @@ public class SignOut extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		for (Cookie c : request.getCookies()) {
-			if (c.getName() == "user") {
+			if (c.getName().equals("user")) {
 				c.setMaxAge(0);
                 response.addCookie(c);
                 break;
 			}
 		}
-		response.sendRedirect("/photo_album_app/");
+		response.sendRedirect("/photo_album_app");
 	}
-
 }

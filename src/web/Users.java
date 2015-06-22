@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -47,26 +49,43 @@ public class Users extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		DatabaseConnector db_conn = new DatabaseConnector();
 		String email = request.getParameter("email");
-		String encrypted_password = BCrypt.hashpw(
-				request.getParameter("password"), BCrypt.gensalt());
+		String password = request.getParameter("password");
+		String re_password = request.getParameter("re_password");
+		System.out.println(password + " " + re_password);
+		Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");
+		Matcher matcher = pattern.matcher(email);
+		if (!matcher.matches()) {
+			String sign_up_failure = "The email you provided is not valid. Try once more ...";
+			request.setAttribute("sign_up_failure", sign_up_failure);
+			request.getRequestDispatcher("/users/sign_up.jsp").include(request,
+					response);
+		} else if (!password.equals(re_password)) {
+			String sign_up_failure = "The passwords you provided do not match. Try once more ...";
+			request.setAttribute("sign_up_failure", sign_up_failure);
+			request.getRequestDispatcher("/users/sign_up.jsp").include(request,
+					response);
+		} else {
+			DatabaseConnector db_conn = new DatabaseConnector();
+			String encrypted_password = BCrypt.hashpw(
+					password, BCrypt.gensalt());
 
-		String query = "insert into users (email, encrypted_password) values (?,?)";
-		try {
-			db_conn.connectToDB("localhost", "photo_album_app");
-			PreparedStatement prep = db_conn.prepareStatement(query);
-			prep.setString(1, email);
-			prep.setString(2, encrypted_password);
-			prep.executeUpdate();
-			prep.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			db_conn.close();
+			try {
+				String query = "insert into users (email, encrypted_password) values (?,?)";
+				db_conn.connectToDB("localhost", "photo_album_app");
+				PreparedStatement prep = db_conn.prepareStatement(query);
+				prep.setString(1, email);
+				prep.setString(2, encrypted_password);
+				prep.executeUpdate();
+				prep.close();
+				response.sendRedirect("/photo_album_app");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				db_conn.close();
+			}
 		}
-		response.sendRedirect("/photo_album_app");
 	}
 
 }
