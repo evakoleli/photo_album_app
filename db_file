@@ -7,8 +7,13 @@ CREATE TABLE photos (
 
 CREATE TABLE comments (
      id    serial PRIMARY KEY,
-     title   varchar(40) NOT NULL CHECK (title <> ''),
      text    varchar(200) NOT NULL CHECK (text <> ''),
      photo_id integer,
      created_at  timestamp DEFAULT current_timestamp
+);
+
+CREATE TABLE users (
+     id    serial PRIMARY KEY,
+     email	varchar(40) UNIQUE NOT NULL CHECK (email <> ''),
+     encrypted_password 	varchar(60) NOT NULL CHECK (encrypted_password <> '')
 );

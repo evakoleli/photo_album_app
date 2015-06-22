@@ -1,17 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@ page import="photo_album_app.DatabaseConnector" %>
-<%@ page import="java.sql.PreparedStatement" %>
-<%@ page import="java.sql.ResultSet" %>
+<%@ page import="java.io.PrintWriter" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" type="text/css" href="../resources/css/styles.css">
-<title>Photos</title>
+<title>Sign up</title>
 </head>
 <body>
-<div id="container">
+	<div id="container">
 	<%
 		String userEmail = null;
 		Cookie[] cookies = request.getCookies();
@@ -43,30 +41,27 @@
 			<a href="/photo_album_app/users/sign_up.jsp">Sing up</a>
 		<% } %>
 	</div>
-	<h1>Photos</h1>
-	<%DatabaseConnector db_conn = new DatabaseConnector();%>
-	<%db_conn.connectToDB("localhost", "photo_album_app");%>
-	<%PreparedStatement prep = db_conn.prepareStatement("select id, title, path from photos");%>
-	<%ResultSet rs = prep.executeQuery(); %>
-<table>
-    <tbody>
-    <% while (rs.next()) {%>
-      <tr>
-        <td>
-          <a href="/photo_album_app/Photos?photo_id=<%=rs.getInt("id") %>"><%=rs.getString("title")%></a>
-        </td>
-        <td>
-          <img src="/photo_album_app/Photos?photo=<%=rs.getString("path") %>" alt="<%=rs.getString("path")%>" style="width:304px;height:228px;">
-        </td>
-      </tr>
-    <%}%>
-    <%prep.close();%>
-    <%db_conn.close();%>
-</tbody>
-</table>
-		<div id="footer">
+	<div id="content">
+	<% if (userEmail != null) { %>
+		<p>You are already signed in.</p>
+	<% } else { %>
+		<h1>Sign up</h1>
+		<form action="/photo_album_app/Users" method="post">
+			<ul>
+			<li><label>Email</label></li>
+			<li><input type="text" name="email" /></li>
+			<li><label>Password</label></li>
+			<li><input type="password" name="password" /></li>
+			<li><label>Confirm password</label></li>
+			<li><input type="password" name="re_password" /></li>
+			<li><input type="submit" value="Sign Up" /></li>
+			</ul>
+		</form>
+	<% } %>
+	</div>
+		<div id="footer" text-align="right">
 			<p>Evangelia Koleli</p>
 		</div>
-</div>
+	</div>
 </body>
 </html>

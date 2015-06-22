@@ -41,41 +41,44 @@ public class Photos extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("image/jpeg");  
 		String photo = request.getParameter("photo");
-	    ServletOutputStream out;  
-	    out = response.getOutputStream();  
-	    FileInputStream fin = new FileInputStream("C:\\Users\\Evangelia Koleli\\Desktop\\"+photo);  
-	      
-	    BufferedInputStream bin = new BufferedInputStream(fin);  
-	    BufferedOutputStream bout = new BufferedOutputStream(out);  
-	    int ch =0; ;  
-	    while((ch=bin.read())!=-1)  
-	    {  
-	    bout.write(ch);  
-	    }  
-	      
-	    bin.close();  
-	    fin.close();  
-	    bout.close();  
-	    out.close();
-		
-		/*DatabaseConnector db_conn = new DatabaseConnector();
-		try {
-			db_conn.connectToDB("localhost", "photo_album_app");
-
-			PreparedStatement prep = db_conn
-					.prepareStatement("select title, path from photos");
-			ResultSet rs = prep.executeQuery();
-			while (rs.next()) {
-				System.out.println(rs.getString("title"));
-				System.out.println(rs.getString("path"));
+		String photo_id = request.getParameter("photo_id");
+		if (photo != null) {
+			response.setContentType("image/jpeg");
+			ServletOutputStream out = response.getOutputStream();
+			FileInputStream fin = new FileInputStream("C:\\Users\\Evangelia Koleli\\Desktop\\" + photo);
+			BufferedInputStream bin = new BufferedInputStream(fin);
+			BufferedOutputStream bout = new BufferedOutputStream(out);
+			int ch = 0;
+			while ((ch = bin.read()) != -1) {
+				bout.write(ch);
 			}
-			prep.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+
+			bin.close();
+			fin.close();
+			bout.close();
+			out.close();
+		} else if (photo_id != null) {
+			DatabaseConnector db_conn = new DatabaseConnector();
+			try {
+				db_conn.connectToDB("localhost", "photo_album_app");
+				PreparedStatement prep = db_conn
+						.prepareStatement("select title, path from photos where id = ?");
+				prep.setInt(1, Integer.parseInt(photo_id));
+				ResultSet rs = prep.executeQuery();
+				rs.next();
+				String title = rs.getString("title");
+				String path = rs.getString("path");
+
+				request.setAttribute("title", title);
+				request.setAttribute("path", path);
+				request.setAttribute("photo_id", photo_id);
+				prep.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			request.getRequestDispatcher("/photos/show.jsp").include(request, response);
+		}
 	}
 
 	/**
