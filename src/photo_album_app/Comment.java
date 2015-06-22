@@ -1,13 +1,24 @@
 package photo_album_app;
 
-import org.joda.time.DateTime;
-
+/**
+ * Comment class
+ * Users can leave comments to photos
+ */
 public class Comment {
+	private Photo photo;
+	private User user;
+	private String text;
+	//this should be DateTime, but I am just using it as a string in this version of the project
+	private String created_at;
+	private String user_email;
 	private int photo_id;
 	private int user_id;
-	private String user_email;
-	private String text;
-	private String created_at;
+	
+	public Comment(Photo photo, User user, String text) {
+		this.photo = new Photo(photo);
+		this.user = new User(user);
+		this.text = text;
+	}
 	
 	public Comment(int photo_id, String user_email, String text, String created_at) {
 		this.photo_id = photo_id;

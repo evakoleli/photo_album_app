@@ -30,14 +30,7 @@ public class Comments extends HttpServlet {
     }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * Create comment
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		DatabaseConnector db_conn = new DatabaseConnector();		
@@ -48,14 +41,16 @@ public class Comments extends HttpServlet {
 		try {
 			db_conn.connectToDB("localhost", "photo_album_app");
 			
+			// find user id
 			String query = "select id from users where email = ?";
 			PreparedStatement prep = db_conn.prepareStatement(query);
 			prep.setString(1, user_email);
 			ResultSet rs = prep.executeQuery();
 			if (!rs.next()) {
-				//
+				// I should have redirected in case user does not exist
 			} else {
 				int user_id = rs.getInt("id");
+				// Create comment
 				query = "insert into comments (text, photo_id, user_id) values (?,?,?)";
 				prep = db_conn.prepareStatement(query);
 				prep.setString(1, text);

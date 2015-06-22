@@ -36,23 +36,15 @@ public class Users extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * Sign up
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		String re_password = request.getParameter("re_password");
-		System.out.println(password + " " + re_password);
+		
+		// Validate email
 		Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");
 		Matcher matcher = pattern.matcher(email);
 		if (!matcher.matches()) {
@@ -60,16 +52,19 @@ public class Users extends HttpServlet {
 			request.setAttribute("sign_up_failure", sign_up_failure);
 			request.getRequestDispatcher("/users/sign_up.jsp").include(request,
 					response);
-		} else if (!password.equals(re_password)) {
+		}
+		// Verify password
+		else if (!password.equals(re_password)) {
 			String sign_up_failure = "The passwords you provided do not match. Try once more ...";
 			request.setAttribute("sign_up_failure", sign_up_failure);
 			request.getRequestDispatcher("/users/sign_up.jsp").include(request,
 					response);
-		} else {
+		}
+		// Create user
+		else {
 			DatabaseConnector db_conn = new DatabaseConnector();
 			String encrypted_password = BCrypt.hashpw(
 					password, BCrypt.gensalt());
-
 			try {
 				String query = "insert into users (email, encrypted_password) values (?,?)";
 				db_conn.connectToDB("localhost", "photo_album_app");

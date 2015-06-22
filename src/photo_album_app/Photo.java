@@ -1,5 +1,8 @@
 package photo_album_app;
 
+/**
+ * User class
+ */
 import java.util.ArrayList;
 
 import org.joda.time.DateTime;
@@ -14,7 +17,14 @@ public class Photo {
 	public Photo(String title, String path) {
 		this.title = title;
 		this.path = path;
-		comments = new ArrayList<Comment>();
+		this.comments = new ArrayList<Comment>();
+	}
+	
+	//copy constructor
+	public Photo(Photo p) {
+		this.title = p.title;
+		this.path = p.path;
+		this.comments = new ArrayList<Comment>(p.comments);
 	}
 	
 	public void setTitle(String title) {
@@ -26,7 +36,7 @@ public class Photo {
 	}
 	
 	public void setComments(ArrayList<Comment> comments) {
-		this.comments = comments;		
+		this.comments = new ArrayList<Comment>(comments);		
 	}
 	
 	public String getTitle() {

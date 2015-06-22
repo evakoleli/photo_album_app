@@ -16,7 +16,6 @@ public class ConfigVariables {
 
 	public void readVariables() throws IOException {
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-		//BufferedReader br = new BufferedReader(new FileReader("../conf/config_variables"));
 		BufferedReader br = new BufferedReader(new FileReader("config_variables"));
 		String line = br.readLine();
 		while (line != null) {

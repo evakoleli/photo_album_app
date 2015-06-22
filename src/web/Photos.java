@@ -40,7 +40,7 @@ public class Photos extends HttpServlet {
     }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * photo show page
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String photo = request.getParameter("photo");
@@ -68,17 +68,19 @@ public class Photos extends HttpServlet {
 			DatabaseConnector db_conn = new DatabaseConnector();
 			try {
 				db_conn.connectToDB("localhost", "photo_album_app");
+				// Get photo
 				PreparedStatement prep = db_conn
 						.prepareStatement("select title, path, created_at from photos where id = ?");
 				prep.setInt(1, Integer.parseInt(photo_id));
 				ResultSet rs = prep.executeQuery();
 				if (!rs.next()) {
-					
+					// I should have implemented a redirect
 				} else {
 					String title = rs.getString("title");
 					String path = rs.getString("path");
 					String created_at = rs.getString("created_at");
-				
+					
+					// Get comments of current photo
 					prep = db_conn.prepareStatement("select text, email, created_at from comments inner join users on user_id = users.id where photo_id = ? order by created_at");
 					prep.setInt(1, Integer.parseInt(photo_id));
 					rs = prep.executeQuery();
@@ -103,18 +105,15 @@ public class Photos extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * Create photo
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		DatabaseConnector db_conn = new DatabaseConnector();
 		Part photoPart = request.getPart("path");
 		String path = Photos.getFileName(photoPart);
-	    //InputStream imageInputStream = photoPart.getInputStream();
 	    photoPart.write(home_folder+path);
 	    
-	    //Part titlePart = request.getPart("title");
 	    String title = request.getParameter("title");
-
 		String query = "insert into photos (title, path) values (?,?)";
 		try {
 			db_conn.connectToDB("localhost", "photo_album_app");
@@ -130,20 +129,6 @@ public class Photos extends HttpServlet {
 			db_conn.close();
 		}
 		response.sendRedirect("photos/index.jsp");
-	}
-
-	/**
-	 * @see HttpServlet#doPut(HttpServletRequest, HttpServletResponse)
-	 */
-	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-	}
-
-	/**
-	 * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
-	 */
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
 
 	private static String getFileName(Part part) {
